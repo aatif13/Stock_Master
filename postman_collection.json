@@ -1,0 +1,426 @@
+{
+  "info": {
+    "name": "StockMaster API",
+    "description": "Complete API collection for StockMaster Inventory Management System",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{auth_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:5000/api",
+      "type": "string"
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\",\n  \"full_name\": \"John Doe\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('auth_token', jsonData.token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@stockmaster.com\",\n  \"password\": \"Admin123!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Send OTP",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/send-otp",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "send-otp"]
+            }
+          }
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"otp\": \"123456\",\n  \"new_password\": \"newpassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/reset-password",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "reset-password"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Products",
+      "item": [
+        {
+          "name": "Create Product",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sku\": \"PROD-001\",\n  \"name\": \"Sample Product\",\n  \"description\": \"Product description\",\n  \"unit\": \"pcs\",\n  \"reorder_level\": 10\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/products",
+              "host": ["{{base_url}}"],
+              "path": ["products"]
+            }
+          }
+        },
+        {
+          "name": "Get Products",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/products?search=&page=1&limit=50",
+              "host": ["{{base_url}}"],
+              "path": ["products"],
+              "query": [
+                {"key": "search", "value": ""},
+                {"key": "page", "value": "1"},
+                {"key": "limit", "value": "50"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Product",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/products/:id",
+              "host": ["{{base_url}}"],
+              "path": ["products", ":id"],
+              "variable": [{"key": "id", "value": ""}]
+            }
+          }
+        },
+        {
+          "name": "Update Product",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Product Name\",\n  \"reorder_level\": 20\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/products/:id",
+              "host": ["{{base_url}}"],
+              "path": ["products", ":id"],
+              "variable": [{"key": "id", "value": ""}]
+            }
+          }
+        },
+        {
+          "name": "Delete Product",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{base_url}}/products/:id",
+              "host": ["{{base_url}}"],
+              "path": ["products", ":id"],
+              "variable": [{"key": "id", "value": ""}]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Receipts",
+      "item": [
+        {
+          "name": "Create Receipt",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"warehouse_id\": \"uuid\",\n  \"supplier_name\": \"Supplier Name\",\n  \"receipt_date\": \"2024-01-01\",\n  \"items\": [\n    {\n      \"product_id\": \"uuid\",\n      \"location_id\": \"uuid\",\n      \"quantity\": 10,\n      \"unit_price\": 100.00\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/receipts",
+              "host": ["{{base_url}}"],
+              "path": ["receipts"]
+            }
+          }
+        },
+        {
+          "name": "Validate Receipt",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{base_url}}/receipts/:id/validate",
+              "host": ["{{base_url}}"],
+              "path": ["receipts", ":id", "validate"],
+              "variable": [{"key": "id", "value": ""}]
+            }
+          }
+        },
+        {
+          "name": "Get Receipts",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/receipts",
+              "host": ["{{base_url}}"],
+              "path": ["receipts"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Deliveries",
+      "item": [
+        {
+          "name": "Create Delivery",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"warehouse_id\": \"uuid\",\n  \"customer_name\": \"Customer Name\",\n  \"delivery_date\": \"2024-01-01\",\n  \"items\": [\n    {\n      \"product_id\": \"uuid\",\n      \"location_id\": \"uuid\",\n      \"quantity\": 5,\n      \"unit_price\": 100.00\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/deliveries",
+              "host": ["{{base_url}}"],
+              "path": ["deliveries"]
+            }
+          }
+        },
+        {
+          "name": "Validate Delivery",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{base_url}}/deliveries/:id/validate",
+              "host": ["{{base_url}}"],
+              "path": ["deliveries", ":id", "validate"],
+              "variable": [{"key": "id", "value": ""}]
+            }
+          }
+        },
+        {
+          "name": "Get Deliveries",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/deliveries",
+              "host": ["{{base_url}}"],
+              "path": ["deliveries"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Transfers",
+      "item": [
+        {
+          "name": "Create Transfer",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"from_warehouse_id\": \"uuid\",\n  \"to_warehouse_id\": \"uuid\",\n  \"transfer_date\": \"2024-01-01\",\n  \"items\": [\n    {\n      \"product_id\": \"uuid\",\n      \"from_location_id\": \"uuid\",\n      \"to_location_id\": \"uuid\",\n      \"quantity\": 5\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/transfers",
+              "host": ["{{base_url}}"],
+              "path": ["transfers"]
+            }
+          }
+        },
+        {
+          "name": "Validate Transfer",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{base_url}}/transfers/:id/validate",
+              "host": ["{{base_url}}"],
+              "path": ["transfers", ":id", "validate"],
+              "variable": [{"key": "id", "value": ""}]
+            }
+          }
+        },
+        {
+          "name": "Get Transfers",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/transfers",
+              "host": ["{{base_url}}"],
+              "path": ["transfers"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Adjustments",
+      "item": [
+        {
+          "name": "Create Adjustment",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"product_id\": \"uuid\",\n  \"location_id\": \"uuid\",\n  \"adjustment_type\": \"increase\",\n  \"quantity\": 10,\n  \"reason\": \"Stock correction\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/adjustments",
+              "host": ["{{base_url}}"],
+              "path": ["adjustments"]
+            }
+          }
+        },
+        {
+          "name": "Get Adjustments",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/adjustments",
+              "host": ["{{base_url}}"],
+              "path": ["adjustments"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        {
+          "name": "Get KPIs",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/dashboard/kpis",
+              "host": ["{{base_url}}"],
+              "path": ["dashboard", "kpis"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Ledger",
+      "item": [
+        {
+          "name": "Get Ledger",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/ledger",
+              "host": ["{{base_url}}"],
+              "path": ["ledger"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Meta",
+      "item": [
+        {
+          "name": "Get Categories",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/meta/categories",
+              "host": ["{{base_url}}"],
+              "path": ["meta", "categories"]
+            }
+          }
+        },
+        {
+          "name": "Get Warehouses",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/meta/warehouses",
+              "host": ["{{base_url}}"],
+              "path": ["meta", "warehouses"]
+            }
+          }
+        },
+        {
+          "name": "Get Locations",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/meta/locations?warehouse_id=uuid",
+              "host": ["{{base_url}}"],
+              "path": ["meta", "locations"],
+              "query": [{"key": "warehouse_id", "value": "uuid"}]
+          }
+        }
+      ]
+    }
+  ]
+}
+
